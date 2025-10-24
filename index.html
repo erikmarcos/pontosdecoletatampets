@@ -78,7 +78,7 @@
       background-color: var(--secondary);
       color: white;
       padding: 18px 0;
-      font-size: 1.15rem;
+      font-size: 1.10rem;
       box-shadow: 0 -2px 8px rgba(44,122,123,0.11);
       letter-spacing: 0.4px;
       width: 100%;
@@ -131,14 +131,14 @@
       pointer-events: none;
     }
 
-    .onboarding-step.active {
+  .onboarding-step.active {
       opacity: 1;
       transform: translateY(0);
       position: relative;
       pointer-events: auto;
     }
 
-    .onboarding-btn {
+  .onboarding-btn {
       background: var(--accent);
       color: white;
       border: none;
@@ -150,11 +150,11 @@
       transition: all 0.25s ease;
     }
 
-    .onboarding-btn:hover {
+  .onboarding-btn:hover {
       background: var(--primary);
       transform: scale(1.04);
     }
-    .onboarding-choice-group.three-buttons {
+  .onboarding-choice-group.three-buttons {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -206,7 +206,7 @@
 }
 @media (max-width: 700px) {
     /* ---------------------------------------------------- */
-    /* GERAL E CONTEÚDO DO MODAL (Regras base mantidas) */
+    /* GERAL E COMPACTAÇÃO (Regras básicas e de iOS) */
     /* ---------------------------------------------------- */
     main {
         min-height: 320px;
@@ -217,17 +217,39 @@
         height: auto;
     }
     .onboarding-content {
+        font-size: 14px !important;
         max-width: 99vw;
         padding: 18px 5vw 12px 5vw;
         border-radius: 13px;
-        min-height: 450px;
+        min-height: 300px; /* Altura mínima compactada */
+        height: auto;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        overflow-y: auto !important;
     }
-    /* Ícones e títulos compactos */
+    
+    footer {
+        padding: 8px 0 !important; /* Compactação do footer */
+        font-size: 0.56rem; 
+    }
+    
+    /* Compactação do Título e Subtítulo */
+    .header-text h1 {
+        font-size: 1.05rem !important; 
+        line-height: 1.2;
+        margin: 0; 
+        padding: 0;
+    }
+    .header-text p {
+        font-size: 0.90rem;
+        margin: 2px 0 5px 0; 
+        padding: 0;
+    }
+    
+    /* Ícones e Títulos Compactos */
     .onboarding-icon {
         width: 40px;
         height: 40px;
@@ -239,18 +261,79 @@
         text-align: center;
     }
 
-    .header-text h1 {
-        font-size: 1.05rem; /* Seu tamanho atual no mobile */
-        line-height: 1.2;
-        margin: 0; /*Garante que não haja margem vertical extra no topo/base do H1 */
+    /* ---------------------------------------------------- */
+    /* NAVEGAÇÃO E BOTÕES (CORREÇÃO FINAL DE ALINHAMENTO/LARGURA) */
+    /* ---------------------------------------------------- */
+
+    /* Contêiner Principal de Botões */
+    .onboarding-choice-group.two-buttons,
+    .onboarding-nav.two-buttons {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: stretch !important; /* CHAVE: ESTICAMENTO VERTICAL */
+        gap: 18px !important;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 0;
+        height: auto !important;
+    }
+    
+    /* Bloco de Botão Genérico (Fallback e Altura Base) */
+    .onboarding-btn-block {
+        /* Garante que o bloco genérico continue como coluna flexível */
+        display: flex;
+        flex-direction: column;
+        align-items: center !important;
+        text-align: center !important;
+        /* Limites genéricos */
+        min-width: unset; 
+        max-width: 98vw;
         padding: 0;
     }
-    .header-text p {
-        font-size: 0.78rem;
-        margin: 2px 0 5px 0; /* Reduzindo drasticamente o margin vertical */
+
+    /* Bloco de Botão Específico (CHAVE DE LARGURA e ALTURA IGUAL) */
+    .onboarding-choice-group.two-buttons .onboarding-btn-block,
+    .onboarding-nav.two-buttons .onboarding-btn-block {
+        /* LARGURA: Define a largura base e impede o crescimento excessivo (S20 Ultra) */
+        flex: 0 0 48%; 
+        
+        /* ALTURA: Garante 100% da altura esticada e alinha o conteúdo à base */
+        height: 100% !important; 
+        justify-content: flex-end !important; 
+        align-items: stretch !important;
+        max-width: 48%;
+        min-width: unset;
         padding: 0;
     }
-}
+
+    /* Botão Interno */
+    .onboarding-btn {
+        font-size: 14px !important; /* Fonte compactada final */
+        width: 100% !important; 
+        max-width: 100% !important; 
+        padding: 15px 0;
+        border-radius: 10px;
+
+    }
+      /* CHAVE: Compacta a imagem do Passo 1 para reduzir o estouro vertical */
+     .onboarding-step[data-step="1"] img {
+        /* Reduz a margem vertical da imagem */
+        margin-top: 10px !important; 
+        margin-bottom: 10px !important;
+        
+        /* Limita a altura máxima da imagem em dispositivos menores */
+        max-height: 120px !important; 
+        height: auto !important;
+        
+        /* Remove o max-width que estava no HTML inline para usar um valor mais seguro */
+        max-width: 90% !important; 
+    }
+
+
+    /* ... os outros blocos (three-buttons, etc.) devem vir aqui ... */
+
+
     
     /* ---------------------------------------------------- */
     /* BOTÕES: GRUPO DE DOIS (Mantendo suas regras originais) */
