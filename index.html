@@ -34,6 +34,8 @@
       flex-direction: column;
       background: var(--background);
       font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      min-height: -webkit-fill-available; /* <--- ESSA LINHA É CRUCIAL E DEVE FICAR FORA DO @media */
     }
 
     main {
@@ -212,10 +214,11 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        height: auto;
     }
     .onboarding-content {
         max-width: 99vw;
-        padding: 18px 7vw 12px 7vw;
+        padding: 18px 5vw 12px 5vw;
         border-radius: 13px;
         min-height: 450px;
         box-sizing: border-box;
