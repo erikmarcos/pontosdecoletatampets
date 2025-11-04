@@ -1,5 +1,6 @@
 // ======================== MAPA ========================
-const map = L.map('map').setView([-23.5015, -47.4526], 13);
+// CHAVE 1: Remove o setView inicial para evitar conflitos de carregamento
+const map = L.map('map'); 
 
 // Camada base
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -96,7 +97,10 @@ function carregarCSV() {
       });
 
       atualizarFiltroRegioes();
-      adicionarPinos();
+      adicionarPinos(); 
+      
+      // CHAVE 2: Centraliza em Sorocaba após o CSV carregar (Solução do Bug)
+      map.setView([-23.5015, -47.4526], 13);
     },
     error: function (err) {
       console.error('Erro ao carregar CSV:', err);
@@ -104,6 +108,8 @@ function carregarCSV() {
     }
   });
 }
+
+// ... (Resto do código sem alteração) ...
 
 // ======================== ATUALIZA <select> DE REGIÕES (AJUSTADO) ========================
 function atualizarFiltroRegioes() {
@@ -145,7 +151,7 @@ function atualizarFiltroRegioes() {
   });
 }
 
-// ======================== ADICIONA PINOS ========================
+// ======================== ADICIONA PINOS (MODIFICADO) ========================
 function adicionarPinos(filtro = {}) {
   markers.forEach(m => map.removeLayer(m));
   markers = [];
@@ -155,19 +161,42 @@ function adicionarPinos(filtro = {}) {
   const userLat = filtro.userLat;
   const userLon = filtro.userLon;
 
+  const bounds = L.latLngBounds([]); // Inicializa a área de limite
+  let pontosEncontrados = 0;
+
   pontos.forEach(ponto => {
+    let incluirPonto = true;
+
     if (regiaoFiltrada && regiaoFiltrada !== '' && regiaoFiltrada !== 'Todas') {
-      if (normalizaTexto(ponto.regiao) !== normalizaTexto(regiaoFiltrada)) return;
+      if (normalizaTexto(ponto.regiao) !== normalizaTexto(regiaoFiltrada)) {
+        incluirPonto = false;
+      }
     } else if (distanciaFiltrada && userLat != null && userLon != null) {
       const d = distanciaKm(userLat, userLon, ponto.lat, ponto.lon);
-      if (d > distanciaFiltrada) return;
+      if (d > distanciaFiltrada) {
+        incluirPonto = false;
+      }
     }
 
-    const marker = L.marker([ponto.lat, ponto.lon]).addTo(map);
-    marker.bindPopup(`<b>${ponto.nome}</b><br>${ponto.bairro}`);
-    marker.on('click', () => abrirSidebar(ponto));
-    markers.push(marker);
+    if (incluirPonto) {
+      const marker = L.marker([ponto.lat, ponto.lon]).addTo(map);
+      marker.bindPopup(`<b>${ponto.nome}</b><br>${ponto.bairro}`);
+      marker.on('click', () => abrirSidebar(ponto));
+      markers.push(marker);
+      
+      bounds.extend([ponto.lat, ponto.lon]); // Adiciona o ponto à área de limite
+      pontosEncontrados++;
+    }
   });
+
+  // CHAVE 1: Centralização do Mapa
+  if (pontosEncontrados > 0) {
+      // Centraliza e ajusta o zoom para caber todos os marcadores
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+  } else {
+      // Se não houver pontos, centraliza na vista padrão de Sorocaba
+      map.setView([-23.5015, -47.4526], 13);
+  }
 }
 
 // ======================== SIDEBAR ========================
@@ -228,6 +257,19 @@ map.on('click', () => {
   if (coverageCircle) map.removeLayer(coverageCircle); // Remove círculo ao clicar fora
 });
 
+// ======================== FUNÇÃO PARA LIMPAR CAMPO CEP (CHAVE DE INTEGRAÇÃO) ========================
+function limparCampoCEP() {
+    const cepInput = document.getElementById('cepInput');
+    // Remove o marcador de usuário e o círculo de cobertura
+    if (userMarker) map.removeLayer(userMarker);
+    if (coverageCircle) map.removeLayer(coverageCircle);
+    // Limpa o valor
+    if (cepInput) {
+        cepInput.value = '';
+    }
+}
+
+
 // ======================== BUSCA POR CEP ========================
 document.getElementById('buscarCEP').addEventListener('click', () => {
   const cep = document.getElementById('cepInput').value.replace(/\D/g, '');
@@ -251,7 +293,7 @@ document.getElementById('buscarCEP').addEventListener('click', () => {
         return;
       }
 
-      map.setView([lat, lon], 14);
+      map.setView([lat, lon], 14); // Centraliza primeiro no CEP
 
       if (userMarker) map.removeLayer(userMarker);
       userMarker = L.marker([lat, lon], {
@@ -274,7 +316,8 @@ document.getElementById('buscarCEP').addEventListener('click', () => {
         weight: 2
       }).addTo(map);
 
-      adicionarPinos({ distancia: distancia, userLat: lat, userLon: lon });
+      // CHAVE: Chama o filtro e a centralização final
+      adicionarPinos({ distancia: distancia, userLat: lat, userLon: lon }); 
     })
     .catch(err => {
       console.error(err);
@@ -282,9 +325,38 @@ document.getElementById('buscarCEP').addEventListener('click', () => {
     });
 });
 
-// ======================== FILTROS ========================
-// REMOVIDO: document.getElementById('regiaoSelect').addEventListener('change', e => { ... });
 
+// ======================== NOVA LÓGICA DE BUSCA POR REGIÃO (BOTÃO) ========================
+document.getElementById('buscarRegiao').addEventListener('click', () => {
+    const regiao = document.getElementById('regiaoSelect').value;
+    
+    // 1. Limpa o campo de CEP e marcadores de distância
+    limparCampoCEP();
+    
+    // 2. Chama a função principal de filtro
+    adicionarPinos({ regiao: regiao, distancia: 0, userLat: null, userLon: null }); 
+    
+    // 3. Centraliza o mapa na região filtrada (usando geocodificação)
+    if (regiao && regiao !== '' && regiao !== 'Todas') {
+        // Usa a região (ou cidade) para centralizar no mapa
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${regiao}, Sorocaba, Brazil`)
+            .then(resp => resp.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    map.setView([lat, lon], 13); // Centraliza na região com zoom padrão (13)
+                }
+            })
+            .catch(err => console.error("Erro ao centralizar mapa por região:", err));
+    } else {
+        // Se for "Todas", centraliza na vista padrão de Sorocaba
+        map.setView([-23.5015, -47.4526], 13);
+    }
+});
+
+
+// ======================== FILTROS DE DISTÂNCIA (MANTIDO) ========================
 document.querySelectorAll('input[name="distancia"]').forEach(radio => {
   radio.addEventListener('change', e => {
     const distancia = parseInt(e.target.value);
@@ -306,36 +378,8 @@ document.querySelectorAll('input[name="distancia"]').forEach(radio => {
         weight: 2
       }).addTo(map);
     }
-  });
+});
 });
 
 // ======================== INICIALIZA ========================
 document.addEventListener('DOMContentLoaded', carregarCSV);
-
-// ======================== NOVA LÓGICA DE BUSCA E LIMPEZA (INTEGRAÇÃO) ========================
-
-// NOVO: Adicionar esta função de limpeza (usada na busca por região)
-function limparCampoCEP() {
-    const cepInput = document.getElementById('cepInput');
-    // Remove o marcador de usuário e o círculo de cobertura (opcional, mas recomendado)
-    if (userMarker) map.removeLayer(userMarker);
-    if (coverageCircle) map.removeLayer(coverageCircle);
-    // Limpa o valor
-    if (cepInput) {
-        cepInput.value = '';
-    }
-}
-
-// NOVO: Event Listener para o botão Buscar Região
-document.getElementById('buscarRegiao').addEventListener('click', () => {
-    const regiao = document.getElementById('regiaoSelect').value;
-    
-    // Desativa explicitamente o filtro por CEP ao buscar por região
-    const distancia = 0; 
-    
-    // Chama a função principal de filtro
-    adicionarPinos({ regiao: regiao, distancia: distancia, userLat: null, userLon: null });
-
-    // CHAVE: Limpa o campo de CEP
-    limparCampoCEP();
-});
