@@ -845,7 +845,7 @@ header .logo {
   position: fixed;
   top: 0px;
   right: 0;
-  width: 370px;
+  width: clamp(320px, 95vw, 370px);
   max-width: 95vw;
   background: var(--sidebar-bg);
   backdrop-filter: blur(10px);
@@ -857,11 +857,14 @@ header .logo {
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
-  min-height: 100vh; /* Para navegadores que não suportam dvh/svh */
-  min-height: 100dvh; /* Dynamic viewport height (iOS moderno) */
-  min-height: 100svh; /* Small viewport height (iOS moderno) */
-  justify-content: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  justify-content: flex-start;
 }
 
 #sidebar.active {
@@ -869,17 +872,24 @@ header .logo {
 }
 
 #sidebar-content {
-  padding-top: 30px;
-  padding-right: 28px;
-  padding-bottom: 30px;
-  padding-left: 28px;
+  padding-top: clamp(60px, 8vh, 80px);
+  padding-right: clamp(20px, 4vw, 28px);
+  padding-bottom: clamp(20px, 4vh, 30px);
+  padding-left: clamp(20px, 4vw, 28px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: -5px;
+  gap: clamp(12px, 2vh, 18px);
   opacity: 0;
   transform: none;
   transition: opacity 0.4s ease, transform 0.4s ease;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
 }
 
 #sidebar.active #sidebar-content {
@@ -888,11 +898,11 @@ header .logo {
 }
 
 #sidebar-content h2 {
-  font-size: 2.1rem;
+  font-size: clamp(1.4rem, 4vw, 2.1rem);
   color: var(--primary);
   text-align: center;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: clamp(4px, 1vh, 8px);
   font-family: "Poppins", Tahoma, Geneva, Verdana, sans-serif;
   letter-spacing: 0.5px;
   line-height: 1.15;
@@ -901,10 +911,9 @@ header .logo {
 #sidebar-content h3 {
   font-family: "Poppins", Tahoma, Geneva, Verdana, sans-serif;
   color: var(--secondary);
-  font-size: 1.18rem;
-  margin-top: -5px;
-  margin-bottom: -50px;
-  margin-bottom: 8px;
+  font-size: clamp(1rem, 2.5vw, 1.18rem);
+  margin-top: clamp(-5px, -1vh, 0px);
+  margin-bottom: clamp(4px, 1vh, 8px);
   font-weight: 500;
 }
 
@@ -912,16 +921,17 @@ header .logo {
 .sidebar-block.horario {
   background: #fff;
   border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  padding: 15px 22px;
+  border-radius: clamp(12px, 2vw, 18px);
+  padding: clamp(12px, 2.5vw, 15px) clamp(16px, 3vw, 22px);
   width: 100%;
+  box-sizing: border-box;
   box-shadow: var(--sidebar-shadow);
   text-align: center;
   align-items: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-bottom: 0;
+  margin-bottom: clamp(8px, 1.5vh, 12px);
   font-family: "Poppins", Tahoma, Geneva, Verdana, sans-serif;
   box-shadow: 0 2px 14px rgba(44, 122, 123, 0.17);
 }
@@ -930,18 +940,18 @@ header .logo {
 .sidebar-block.horario strong {
   font-weight: 700;
   color: var(--primary);
-  margin-bottom: 6px;
-  font-size: 1.14rem;
+  margin-bottom: clamp(4px, 1vh, 6px);
+  font-size: clamp(0.95rem, 2.5vw, 1.14rem);
   text-align: center;
   width: 100%;
   display: block;
 }
 
 .sidebar-block p {
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 2vw, 1rem);
   color: #444;
   text-align: center;
-  margin: 5px 0;
+  margin: clamp(4px, 1vh, 5px) 0;
   line-height: 1.46;
 }
 
@@ -952,18 +962,22 @@ header .logo {
 
 .sidebar-btn-gmaps {
   display: inline-block;
-  padding: 14px 28px;
-  font-size: 1.08rem;
+  padding: clamp(12px, 2.5vw, 14px) clamp(20px, 4vw, 28px);
+  font-size: clamp(0.95rem, 2.5vw, 1.08rem);
   font-weight: 600;
   background: linear-gradient(95deg, var(--primary) 10%, var(--secondary) 90%);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: clamp(8px, 1.5vw, 10px);
   text-decoration: none;
-  margin-top: 5px;
+  margin-top: clamp(4px, 1vh, 5px);
   transition: background 0.2s, transform 0.2s;
   box-shadow: 0 3px 10px rgba(47, 131, 199, 0.09);
   font-family: "Poppins", Tahoma, Geneva, Verdana, sans-serif;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .sidebar-btn-gmaps:hover {
@@ -974,16 +988,17 @@ header .logo {
 
 /* ======================== BOTÃO FECHAR ======================== */
 .close-btn {
-  position: absolute;
-  top: 20px;
-  left: 22px;
-  width: 40px;
-  height: 40px;
+  position: fixed;
+  top: clamp(15px, 3vh, 20px);
+  right: clamp(15px, 3vw, 22px);
+  left: auto;
+  width: clamp(36px, 8vw, 40px);
+  height: clamp(36px, 8vw, 40px);
   border-radius: 50%;
   border: 2px solid var(--primary);
   background-color: #fff;
   color: var(--primary);
-  font-size: 1.4rem;
+  font-size: clamp(1.2rem, 3vw, 1.4rem);
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -992,12 +1007,57 @@ header .logo {
   transition: all 0.25s ease;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.11);
   z-index: 1100;
+  flex-shrink: 0;
 }
 
 .close-btn:hover {
   background-color: var(--primary);
   color: #fff;
   transform: scale(1.09);
+}
+
+/* ======================== SCROLLBAR CUSTOMIZADA PARA SIDEBAR ======================== */
+#sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+  background: rgba(44, 122, 123, 0.05);
+  border-radius: 10px;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+  background: rgba(44, 122, 123, 0.3);
+  border-radius: 10px;
+}
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(44, 122, 123, 0.5);
+}
+
+#sidebar-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+#sidebar-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#sidebar-content::-webkit-scrollbar-thumb {
+  background: rgba(44, 122, 123, 0.2);
+  border-radius: 10px;
+}
+
+/* ======================== TABLET RESPONSIVO ======================== */
+@media (min-width: 701px) and (max-width: 1024px) {
+  #sidebar {
+    width: clamp(300px, 45vw, 350px);
+    max-width: 50vw;
+  }
+
+  #sidebar-content {
+    padding: clamp(50px, 8vh, 70px) clamp(20px, 3vw, 26px) clamp(20px, 4vh, 28px) clamp(20px, 3vw, 26px);
+  }
 }
 
 /* ======================== FOOTER ======================== */
@@ -1020,19 +1080,35 @@ footer {
     transform: none !important;
     opacity: 1 !important;
 
-    /* === CORREÇÃO DA SIDEBAR PARA MOBILE === */
+    /* === SIDEBAR RESPONSIVA PARA MOBILE COM SCROLL === */
     #sidebar {
-      width: 100% !important; /* Força a largura total da tela */
-      max-width: 100% !important; /* Garante que não haja limite de 95vw */
-      left: 0 !important; /* Força o alinhamento na extremidade esquerda */
-      right: auto !important; /* Desabilita o alinhamento pela direita */
-      /* O transform: translateX(100%) continua funcionando para escondê-la */
+      width: 100% !important;
+      max-width: 100% !important;
+      left: 0 !important;
+      right: auto !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+      max-height: 100vh !important;
+      max-height: 100dvh !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+
+    #sidebar-content {
+      padding-top: clamp(50px, 10vh, 70px) !important;
+      padding-right: clamp(16px, 4vw, 24px) !important;
+      padding-bottom: clamp(16px, 4vh, 24px) !important;
+      padding-left: clamp(16px, 4vw, 24px) !important;
+      gap: clamp(10px, 2vh, 14px) !important;
     }
 
     /* === CORREÇÃO DO BOTÃO FECHAR === */
     .close-btn {
-      left: auto !important; /* Remove o alinhamento da esquerda */
-      right: 18px !important; /* Alinha o botão de fechar à direita */
+      left: auto !important;
+      right: clamp(12px, 3vw, 18px) !important;
+      top: clamp(12px, 3vh, 18px) !important;
+      width: clamp(40px, 9vw, 44px) !important;
+      height: clamp(40px, 9vw, 44px) !important;
     }
   }
   .header-content {
