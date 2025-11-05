@@ -51,12 +51,15 @@
 
           body {
             min-height: 100vh;
+            min-height: 100dvh;
+            min-height: -webkit-fill-available; /* <--- ESSA LINHA É CRUCIAL E DEVE FICAR FORA DO @media */
             display: flex;
             flex-direction: column;
             background: var(--background);
             font-family: 'Poppins', sans-serif;
-            min-height: 100vh;
-            min-height: -webkit-fill-available; /* <--- ESSA LINHA É CRUCIAL E DEVE FICAR FORA DO @media */
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
           }
 
           main {
@@ -169,12 +172,31 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
           }
+
+        .onboarding-btn i {
+            font-size: 1.1rem;
+        }
 
         .onboarding-btn:hover {
             background: var(--primary);
             transform: scale(1.04);
           }
+
+        /* Botão de voltar - cor diferente */
+        .onboarding-btn-back {
+            background: #6c757d !important; /* Cor cinza para diferenciar */
+            color: white !important;
+        }
+
+        .onboarding-btn-back:hover {
+            background: #5a6268 !important;
+            transform: scale(1.04);
+        }
         .onboarding-choice-group.three-buttons {
         display: flex;
         flex-direction: column;
@@ -225,17 +247,52 @@
           /* CHAVE: Adiciona margem superior no desktop */
           margin-top: 36px;
       }
+      /* ======================== IPHONE 5 E TELAS MUITO PEQUENAS ======================== */
+      @media (max-width: 375px) {
+          body {
+              overflow-y: auto !important;
+              -webkit-overflow-scrolling: touch !important;
+          }
+
+          main {
+              min-height: 0 !important;
+              padding: 10px 8px !important;
+              align-items: flex-start !important;
+              overflow-y: auto !important;
+              -webkit-overflow-scrolling: touch !important;
+          }
+
+          .onboarding-content {
+              max-height: 90vh !important;
+              min-height: auto !important;
+              padding: 16px 12px 16px 12px !important;
+              overflow-y: auto !important;
+              overflow-x: hidden !important;
+              -webkit-overflow-scrolling: touch !important;
+              justify-content: flex-start !important;
+          }
+
+          .onboarding-steps-wrapper {
+              width: 100%;
+              min-height: auto;
+              overflow: visible;
+          }
+      }
+
       @media (max-width: 700px) {
           /* ---------------------------------------------------- */
           /* GERAL E COMPACTAÇÃO (Regras básicas e de iOS) */
           /* ---------------------------------------------------- */
           main {
               min-height: 320px;
-              padding: 0;
+              padding: clamp(8px, 2vw, 16px);
               display: flex;
               justify-content: center;
-              align-items: center;
+              align-items: flex-start !important; /* Mudado para flex-start para permitir scroll */
               height: auto;
+              max-height: 100vh;
+              overflow-y: auto;
+              -webkit-overflow-scrolling: touch;
           }
           .onboarding-content {
               font-size: 14px !important;
@@ -243,13 +300,25 @@
               padding: 18px 5vw 12px 5vw;
               border-radius: 13px;
               min-height: 300px; /* Altura mínima compactada */
+              max-height: 85vh !important; /* Altura máxima baseada na viewport */
               height: auto;
               box-sizing: border-box;
               display: flex;
               flex-direction: column;
               align-items: center;
-              justify-content: center;
+              justify-content: flex-start !important; /* Mudado de center para flex-start */
               overflow-y: auto !important;
+              overflow-x: hidden !important;
+              -webkit-overflow-scrolling: touch !important; /* Scroll suave no iOS */
+              position: relative;
+          }
+
+          /* Garantir que o wrapper interno também permita scroll */
+          .onboarding-steps-wrapper {
+              width: 100%;
+              min-height: auto;
+              position: relative;
+              overflow: visible;
           }
 
           footer {
@@ -283,19 +352,19 @@
           }
 
           /* ---------------------------------------------------- */
-          /* NAVEGAÇÃO E BOTÕES (CORREÇÃO FINAL DE ALINHAMENTO/LARGURA) */
+          /* NAVEGAÇÃO E BOTÕES - MOBILE (EMPILHADOS VERTICALMENTE) */
           /* ---------------------------------------------------- */
 
-          /* Contêiner Principal de Botões */
+          /* Contêiner Principal de Botões - MOBILE: VERTICAL */
           .onboarding-choice-group.two-buttons,
           .onboarding-nav.two-buttons {
               display: flex !important;
-              flex-direction: row !important;
+              flex-direction: column !important; /* MOBILE: Empilhado verticalmente */
               justify-content: center !important;
-              align-items: stretch !important; /* CHAVE: ESTICAMENTO VERTICAL */
-              gap: 18px !important;
+              align-items: center !important;
+              gap: 14px !important; /* Espaçamento entre botões empilhados */
               width: 100%;
-              margin-top: 10px;
+              margin-top: 16px;
               margin-bottom: 0;
               height: auto !important;
           }
@@ -313,19 +382,18 @@
               padding: 0;
           }
 
-          /* Bloco de Botão Específico (CHAVE DE LARGURA e ALTURA IGUAL) */
+          /* Bloco de Botão Específico - MOBILE: LARGURA TOTAL */
           .onboarding-choice-group.two-buttons .onboarding-btn-block,
           .onboarding-nav.two-buttons .onboarding-btn-block {
-              /* LARGURA: Define a largura base e impede o crescimento excessivo (S20 Ultra) */
-              flex: 0 0 48%;
-
-              /* ALTURA: Garante 100% da altura esticada e alinha o conteúdo à base */
-              height: 100% !important;
-              justify-content: flex-end !important;
-              align-items: stretch !important;
-              max-width: 48%;
-              min-width: unset;
+              /* MOBILE: Ocupa 100% da largura quando empilhado */
+              width: 100% !important;
+              max-width: 100% !important;
+              flex: 1 1 auto !important;
+              min-width: unset !important;
+              justify-content: center !important;
+              align-items: center !important;
               padding: 0;
+              margin-bottom: 0;
           }
 
           /* Botão Interno */
@@ -335,9 +403,42 @@
               max-width: 100% !important;
               padding: 15px 0;
               border-radius: 10px;
-
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
           }
-            /* CHAVE: Compacta a imagem do Passo 1 para reduzir o estouro vertical */
+
+          /* Ícones nos botões */
+          .onboarding-btn i {
+              font-size: 16px;
+          }
+
+          /* Botão de voltar - cor diferente */
+          .onboarding-btn-back {
+              background: #6c757d !important; /* Cor cinza para diferenciar */
+              color: white !important;
+          }
+
+          .onboarding-btn-back:hover {
+              background: #5a6268 !important;
+              transform: scale(1.02);
+          }
+
+          /* MOBILE: Próximo primeiro, Voltar embaixo */
+          .onboarding-nav.two-buttons {
+              flex-direction: column !important;
+          }
+
+          .onboarding-nav.two-buttons .onboarding-btn-block:first-child {
+              order: 1;
+          }
+
+          .onboarding-nav.two-buttons .onboarding-btn-block:last-child {
+              order: 2;
+          }
+
+          /* CHAVE: Compacta a imagem do Passo 1 para reduzir o estouro vertical */
            .onboarding-step[data-step="1"] img {
               /* Reduz a margem vertical da imagem */
               margin-top: 10px !important;
@@ -356,42 +457,16 @@
 
 
 
-          /* ---------------------------------------------------- */
-          /* BOTÕES: GRUPO DE DOIS (Mantendo suas regras originais) */
-          /* ---------------------------------------------------- */
-          .onboarding-choice-group.two-buttons,
-          .onboarding-nav.two-buttons {
-              display: flex !important;
-            flex-direction: row !important;
-            justify-content: center !important;
-            align-items: stretch !important; /* <--- VAMOS MUDAR ISSO */
-            gap: 18px !important;
-            width: 100%;
-            margin-top: 10px;
-            margin-bottom: 0;
-            height: auto !important;
-          }
-          .onboarding-choice-group.two-buttons .onboarding-btn-block,
-          .onboarding-nav.two-buttons .onboarding-btn-block {
-             flex: 1 1 0;
-             max-width: 44vw;
-             min-width: 120px;
-            padding: 0;
-            align-items: stretch !important;
-            text-align: center !important;
-            margin-bottom: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end; /* <--- VAMOS ADICIONAR HEIGHT */
-
-          }
-          .onboarding-choice-group.two-buttons .onboarding-btn {
-              width: 100%;
-              font-size: 1.1rem;
-              padding: 14px 0;
+          /* Botões empilhados - MOBILE: Largura total */
+          .onboarding-choice-group.two-buttons .onboarding-btn,
+          .onboarding-nav.two-buttons .onboarding-btn {
+              width: 100% !important;
+              max-width: 100% !important;
+              font-size: 15px !important;
+              padding: 14px 16px !important;
               border-radius: 10px;
               margin-bottom: 0;
-              /* ... outros estilos de botão ... */
+              min-height: 48px; /* Touch target mínimo */
           }
           /* ... (outras regras two-buttons aqui) ... */
 
@@ -429,33 +504,35 @@
               justify-content: center !important;
           }
 
-          /* CHAVE: Forçar a linha superior a ser horizontal (Dois botões lado a lado) */
+          /* MOBILE: Linha superior também empilhada verticalmente */
           .onboarding-choice-group.three-buttons .onboarding-btn-row {
               display: flex !important;
-              flex-direction: row !important;
+              flex-direction: column !important; /* MOBILE: Empilhado verticalmente */
               justify-content: center !important;
-              align-items: stretch !important;
-              gap: 12px !important; /* Espaçamento entre os 2 botões de cima */
+              align-items: center !important;
+              gap: 14px !important; /* Espaçamento entre botões empilhados */
               width: 100% !important;
-              margin-bottom: 0 !important;
+              margin-bottom: 14px !important;
           }
 
-          /* CHAVE DE LARGURA IGUAL: Força cada bloco a ocupar 50% */
+          /* MOBILE: Cada bloco ocupa 100% da largura */
           .onboarding-choice-group.three-buttons .onboarding-btn-row .onboarding-btn-block {
-              flex: 1 1 50%; /* <--- CHAVE: Força cada botão a ocupar metade do espaço */
-              max-width: 50%;
-              min-width: unset; /* Remove restrições desnecessárias */
+              width: 100% !important;
+              max-width: 100% !important;
+              flex: 1 1 auto !important;
+              min-width: unset !important;
               padding: 0;
-              align-items: stretch !important;
+              align-items: center !important;
               text-align: center !important;
           }
 
-          /* Estilo dos botões superiores */
+          /* Estilo dos botões superiores - MOBILE: Largura total */
           .onboarding-choice-group.three-buttons .onboarding-btn {
-              font-size: 1.08rem;
-              padding: 15px 0;
-              width: 100%; /* Ocupa 100% dos 50% do bloco pai */
-              border-radius: 8px;
+              font-size: 15px !important;
+              padding: 14px 16px !important;
+              width: 100% !important; /* MOBILE: Ocupa 100% da largura */
+              max-width: 100% !important;
+              border-radius: 10px;
               margin-bottom: 0;
               margin-top: 0;
               white-space: normal;
@@ -466,6 +543,7 @@
               border: none;
               box-shadow: 0 2px 14px rgba(44,122,123,0.13);
               transition: background 0.18s, color 0.18s, transform 0.14s;
+              min-height: 48px; /* Touch target mínimo */
           }
 
           /* *** CHAVE DE TAMANHO DO BOTÃO 'VOLTAR' NO MOBILE *** */
@@ -519,10 +597,6 @@
           .onboarding-choice-group.two-buttons .onboarding-btn-block .onboarding-btn-text {
               text-align: center !important; /* Garante que o texto volte para o centro */
               width: 100% !important; /* Garante que o parágrafo ocupe toda a largura disponível para centralizar */
-              gap: 10px
-
-
-
           }
 
           /* ... (Suas regras de HEADER e FOOTER aqui) ... */
@@ -578,13 +652,13 @@
               <div class="onboarding-choice-group two-buttons">
                 <div class="onboarding-btn-block height-fix">
                   <button class="onboarding-btn" data-action="finish">
-                    Sim
+                    <i class="fas fa-map-marked-alt"></i> Sim
                   </button>
                   <p class="onboarding-btn-text">abrir o mapa</p>
                 </div>
                 <div class="onboarding-btn-block two-buttons">
                   <button class="onboarding-btn" data-action="next">
-                    Ainda não
+                    <i class="fas fa-info-circle"></i> Ainda não
                   </button>
                   <p class="onboarding-btn-text">
                     Ver instruções <br />
@@ -603,7 +677,7 @@
                 <div class="onboarding-btn-row">
                   <div class="onboarding-btn-block">
                     <button class="onboarding-btn" data-action="choose-region">
-                      Por região/cidade
+                      <i class="fas fa-map-marker-alt"></i> Por região/cidade
                     </button>
                   </div>
                   <div class="onboarding-btn-block">
@@ -611,7 +685,7 @@
                       class="onboarding-btn"
                       data-action="choose-distance"
                     >
-                      Por distância (CEP)
+                      <i class="fas fa-ruler"></i> Por distância (CEP)
                     </button>
                   </div>
                 </div>
@@ -620,7 +694,7 @@
                     class="onboarding-btn onboarding-btn-back"
                     data-action="back"
                   >
-                    Voltar
+                    <i class="fas fa-arrow-left"></i> Voltar
                   </button>
                 </div>
               </div>
@@ -674,15 +748,19 @@
                 </ol>
               </div>
               <div class="onboarding-nav two-buttons">
-                <button
-                  class="onboarding-btn onboarding-btn-back"
-                  data-action="back"
-                >
-                  Voltar
-                </button>
-                <button class="onboarding-btn" data-action="next-3a">
-                  Próximo
-                </button>
+                <div class="onboarding-btn-block">
+                  <button class="onboarding-btn" data-action="next-3a">
+                    <i class="fas fa-arrow-right"></i> Próximo
+                  </button>
+                </div>
+                <div class="onboarding-btn-block">
+                  <button
+                    class="onboarding-btn onboarding-btn-back"
+                    data-action="back"
+                  >
+                    <i class="fas fa-arrow-left"></i> Voltar
+                  </button>
+                </div>
               </div>
             </section>
 
@@ -735,15 +813,19 @@
                 </ol>
               </div>
               <div class="onboarding-nav two-buttons">
-                <button
-                  class="onboarding-btn onboarding-btn-back"
-                  data-action="back-to-step2"
-                >
-                  Voltar
-                </button>
-                <button class="onboarding-btn" data-action="next-3b">
-                  Próximo
-                </button>
+                <div class="onboarding-btn-block">
+                  <button class="onboarding-btn" data-action="next-3b">
+                    <i class="fas fa-arrow-right"></i> Próximo
+                  </button>
+                </div>
+                <div class="onboarding-btn-block">
+                  <button
+                    class="onboarding-btn onboarding-btn-back"
+                    data-action="back-to-step2"
+                  >
+                    <i class="fas fa-arrow-left"></i> Voltar
+                  </button>
+                </div>
               </div>
             </section>
 
@@ -786,16 +868,19 @@
               </div>
               <div class="onboarding-choice-group two-buttons">
                 <div class="onboarding-btn-block">
-                  <button class="onboarding-btn" data-action="back-to-step2">
-                    Voltar
-                  </button>
-                  <p class="onboarding-btn-text">Menu inicial</p>
-                </div>
-                <div class="onboarding-btn-block">
                   <button class="onboarding-btn" data-action="finish">
-                    Entendi!
+                    <i class="fas fa-check-circle"></i> Entendi!
                   </button>
                   <p class="onboarding-btn-text">Ir para o mapa</p>
+                </div>
+                <div class="onboarding-btn-block">
+                  <button
+                    class="onboarding-btn onboarding-btn-back"
+                    data-action="back-to-step2"
+                  >
+                    <i class="fas fa-arrow-left"></i> Voltar
+                  </button>
+                  <p class="onboarding-btn-text">Menu inicial</p>
                 </div>
               </div>
             </section>
@@ -827,15 +912,18 @@
               </p>
               <div class="onboarding-choice-group two-buttons">
                 <div class="onboarding-btn-block">
-                  <!-- handler customizado para voltar ao 3b -->
-                  <button class="onboarding-btn" data-action="back-3b">
-                    Voltar
+                  <!-- handler customizado para ir ao 4 -->
+                  <button class="onboarding-btn" data-action="next-5">
+                    <i class="fas fa-arrow-right"></i> Próximo
                   </button>
                 </div>
                 <div class="onboarding-btn-block">
-                  <!-- handler customizado para ir ao 4 -->
-                  <button class="onboarding-btn" data-action="next-5">
-                    Próximo
+                  <!-- handler customizado para voltar ao 3b -->
+                  <button
+                    class="onboarding-btn onboarding-btn-back"
+                    data-action="back-3b"
+                  >
+                    <i class="fas fa-arrow-left"></i> Voltar
                   </button>
                 </div>
               </div>
