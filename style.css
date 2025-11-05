@@ -162,14 +162,20 @@ header .logo {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 15px;
   align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 
   /* CHAVE: INSERÇÃO DO BACKGROUND PERSONALIZADO */
   background-image: url("images/tampinhas.png");
   background-size: cover;
-  background-position: center;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
   background-color: var(
     --card-bg
   ); /* Cor de fallback, caso a imagem não carregue */
+  min-height: fit-content;
 
   padding: 18px 16px;
   z-index: 900;
@@ -680,8 +686,9 @@ header .logo {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     padding: 20px 24px;
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
   }
 
   .cep-box {
@@ -1056,7 +1063,8 @@ header .logo {
   }
 
   #sidebar-content {
-    padding: clamp(50px, 8vh, 70px) clamp(20px, 3vw, 26px) clamp(20px, 4vh, 28px) clamp(20px, 3vw, 26px);
+    padding: clamp(50px, 8vh, 70px) clamp(20px, 3vw, 26px)
+      clamp(20px, 4vh, 28px) clamp(20px, 3vw, 26px);
   }
 }
 
